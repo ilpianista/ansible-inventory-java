@@ -66,6 +66,14 @@ public class InventoryReaderTest {
                 Assert.assertEquals(1, h.getVariables().size());
             }
         }
+
+        inventoryText = "host1 var1=value1";
+
+        inventory = InventoryReader.read(inventoryText);
+
+        Assert.assertEquals(0, inventory.getGroups().size());
+        Assert.assertEquals(1, inventory.getHosts().size());
+        Assert.assertEquals(1, inventory.getHosts().iterator().next().getVariables().size());
     }
 
     @Test

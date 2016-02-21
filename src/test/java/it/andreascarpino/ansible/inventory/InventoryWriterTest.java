@@ -49,6 +49,14 @@ public class InventoryWriterTest {
         String inventoryText = InventoryWriter.write(inventory);
 
         Assert.assertEquals("[group1]\nhost1 var1=value1\n", inventoryText);
+
+        inventory = new Inventory();
+
+        inventory.addHost(host);
+
+        inventoryText = InventoryWriter.write(inventory);
+
+        Assert.assertEquals("host1 var1=value1\n", inventoryText);
     }
 
 }

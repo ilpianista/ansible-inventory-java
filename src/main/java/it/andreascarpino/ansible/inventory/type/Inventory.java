@@ -27,11 +27,13 @@ import java.util.Map;
  */
 public class Inventory {
 
+    private Map<String, Host> hosts;
     private Map<String, Group> groups;
 
     public Inventory() {
         super();
-        this.groups = new HashMap<String, Group>();
+        this.hosts = new HashMap<>();
+        this.groups = new HashMap<>();
     }
 
     public Inventory(List<Group> groups) {
@@ -42,12 +44,24 @@ public class Inventory {
         }
     }
 
+    public Collection<Host> getHosts() {
+        return this.hosts.values();
+    }
+
     public Collection<Group> getGroups() {
         return this.groups.values();
     }
 
+    public void addHost(Host host) {
+        this.hosts.put(host.getName(), host);
+    }
+
     public void addGroup(Group group) {
         this.groups.put(group.getName(), group);
+    }
+
+    public void removeHost(String host) {
+        this.hosts.remove(host);
     }
 
     public void removeGroup(String group) {
@@ -55,6 +69,7 @@ public class Inventory {
     }
 
     public void clear() {
+        this.hosts.clear();
         this.groups.clear();
     }
 }

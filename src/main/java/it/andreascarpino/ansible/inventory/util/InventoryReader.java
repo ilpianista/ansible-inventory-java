@@ -35,31 +35,28 @@ public class InventoryReader {
     public static Inventory read(String text) {
         final Inventory inventory = new Inventory();
 
-        final StringTokenizer tokenizer = new StringTokenizer(text, " \t\n\r\f", true);
+        final StringTokenizer tokenizer = new StringTokenizer(text);
 
         Group group = null;
         Host host = null;
-        boolean nextIsHost = false;
         while (tokenizer.hasMoreTokens()) {
             final String token = tokenizer.nextToken();
 
             if (token.startsWith("[")) {
                 group = new Group(token.replaceAll("^\\[", "").replaceAll("]$", ""));
                 inventory.addGroup(group);
-                nextIsHost = false;
-            } else if ("\f".equals(token) || "\t".equals(token) || " ".equals(token) || "\r".equals(token)) {
-                continue;
-            } else if ("\n".equals(token)) {
-                nextIsHost = true;
-            } else if (!nextIsHost && token.contains("=")) {
+            } else if (token.contains("=")) {
                 if (host != null) {
                     final String[] v = token.split("=");
                     host.addVariable(new Variable(v[0], v[1]));
                 }
-            } else if (nextIsHost && group != null) {
+            } else {
                 host = new Host(token);
-                group.addHost(host);
-                nextIsHost = false;
+                if (group != null) {
+                    group.addHost(host);
+                } else {
+                    inventory.addHost(host);
+                }
             }
         }
 

@@ -24,7 +24,6 @@ import it.andreascarpino.ansible.inventory.type.Variable;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Writer;
 
 /**
  * @author Andrea Scarpino
@@ -42,20 +41,41 @@ public class InventoryWriter {
         return " " + variable.getName() + "=" + variable.getValue();
     }
 
+    private static String printHost(Host host) {
+        final StringBuffer buffer = new StringBuffer();
+        buffer.append(host.getName());
+
+        for (Variable variable : host.getVariables()) {
+            buffer.append(variableBlock(variable));
+        }
+
+        buffer.append("\n");
+
+        return buffer.toString();
+    }
+
+    private static void printHost(Host host, OutputStream stream) throws IOException {
+        stream.write(host.getName().getBytes());
+
+        for (Variable variable : host.getVariables()) {
+            stream.write(variableBlock(variable).getBytes());
+        }
+
+        stream.write("\n".getBytes());
+    }
+
     public static String write(Inventory inventory) {
         final StringBuffer buffer = new StringBuffer();
+
+        for (Host host : inventory.getHosts()) {
+            buffer.append(printHost(host));
+        }
 
         for (Group group : inventory.getGroups()) {
             buffer.append(groupHeader(group.getName()));
 
             for (Host host : group.getHosts()) {
-                buffer.append(host.getName());
-
-                for (Variable variable : host.getVariables()) {
-                    buffer.append(variableBlock(variable));
-                }
-
-                buffer.append("\n");
+                buffer.append(printHost(host));
             }
         }
 
@@ -63,17 +83,15 @@ public class InventoryWriter {
     }
 
     public static void write(Inventory inventory, OutputStream stream) throws IOException {
+        for (Host host : inventory.getHosts()) {
+            printHost(host, stream);
+        }
+
         for (Group group : inventory.getGroups()) {
             stream.write(groupHeader(group.getName()).getBytes());
 
             for (Host host : group.getHosts()) {
-                stream.write(host.getName().getBytes());
-
-                for (Variable variable : host.getVariables()) {
-                    stream.write(variableBlock(variable).getBytes());
-                }
-
-                stream.write("\n".getBytes());
+                printHost(host, stream);
             }
 
             stream.write("\n".getBytes());

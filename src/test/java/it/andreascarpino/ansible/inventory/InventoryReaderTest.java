@@ -86,6 +86,15 @@ public class InventoryReaderTest {
     }
 
     @Test
+    public void testReadSkipComments() {
+        final String inventoryText = ";I'm a comment\nhost1 var1=value1\n";
+
+        Inventory inventory = InventoryReader.read(inventoryText);
+
+        Assert.assertEquals(0, inventory.getGroups().size());
+    }
+
+    @Test
     public void testReadNoHosts() {
         final String inventoryText = "[group1]\n";
 

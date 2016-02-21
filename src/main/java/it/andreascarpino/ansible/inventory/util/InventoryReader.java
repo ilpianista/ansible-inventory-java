@@ -35,12 +35,35 @@ public class InventoryReader {
     public static Inventory read(String text) {
         final Inventory inventory = new Inventory();
 
-        final StringTokenizer tokenizer = new StringTokenizer(text);
+        final StringTokenizer tokenizer = new StringTokenizer(text, " \t\n\r\f", true);
 
         Group group = null;
         Host host = null;
+        boolean skipComment = false;
         while (tokenizer.hasMoreTokens()) {
             final String token = tokenizer.nextToken();
+
+            // New line, reset any flag
+            if (token.equals("\n")) {
+                skipComment = false;
+                continue;
+            }
+
+            // We are still reading a comment line
+            if (skipComment) {
+                continue;
+            }
+
+            // Ignore separators
+            if (token.equals(" ") || token.equals("\t") || token.equals("\r") || token.equals("\f")) {
+                continue;
+            }
+
+            // We are reading a comment
+            if (token.startsWith(";") || token.startsWith("#")) {
+                skipComment = true;
+                continue;
+            }
 
             if (token.startsWith("[")) {
                 group = new Group(token.replaceAll("^\\[", "").replaceAll("]$", ""));

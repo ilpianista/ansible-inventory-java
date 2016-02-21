@@ -42,16 +42,16 @@ public class InventoryWriter {
     }
 
     private static String printHost(Host host) {
-        final StringBuffer buffer = new StringBuffer();
-        buffer.append(host.getName());
+        final StringBuilder builder = new StringBuilder();
+        builder.append(host.getName());
 
         for (Variable variable : host.getVariables()) {
-            buffer.append(variableBlock(variable));
+            builder.append(variableBlock(variable));
         }
 
-        buffer.append("\n");
+        builder.append("\n");
 
-        return buffer.toString();
+        return builder.toString();
     }
 
     private static void printHost(Host host, OutputStream stream) throws IOException {
@@ -65,21 +65,21 @@ public class InventoryWriter {
     }
 
     public static String write(Inventory inventory) {
-        final StringBuffer buffer = new StringBuffer();
+        final StringBuilder builder = new StringBuilder();
 
         for (Host host : inventory.getHosts()) {
-            buffer.append(printHost(host));
+            builder.append(printHost(host));
         }
 
         for (Group group : inventory.getGroups()) {
-            buffer.append(groupHeader(group.getName()));
+            builder.append(groupHeader(group.getName()));
 
             for (Host host : group.getHosts()) {
-                buffer.append(printHost(host));
+                builder.append(printHost(host));
             }
         }
 
-        return buffer.toString();
+        return builder.toString();
     }
 
     public static void write(Inventory inventory, OutputStream stream) throws IOException {

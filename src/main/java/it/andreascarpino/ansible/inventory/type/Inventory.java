@@ -28,6 +28,7 @@ import java.util.Map;
 public class Inventory {
 
     private Map<String, Host> hosts;
+
     private Map<String, Group> groups;
 
     public Inventory() {
@@ -58,6 +59,14 @@ public class Inventory {
 
     public void addGroup(Group group) {
         this.groups.put(group.getName(), group);
+    }
+
+    public Host getHost(String host) {
+        return this.hosts.get(host);
+    }
+
+    public Group getGroup(String group) {
+        return this.groups.get(group);
     }
 
     public void removeHost(String host) {

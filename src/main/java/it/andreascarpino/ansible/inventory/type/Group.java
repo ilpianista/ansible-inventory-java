@@ -31,10 +31,13 @@ public class Group {
 
     private Map<String, Host> hosts;
 
+    private Map<String, Group> subgroups;
+
     public Group(String name) {
         super();
         this.name = name;
-        this.hosts = new HashMap<String, Host>();
+        this.hosts = new HashMap<>();
+        this.subgroups = new HashMap<>();
     }
 
     public Group(String name, List<Host> hosts) {
@@ -53,16 +56,29 @@ public class Group {
         return this.hosts.values();
     }
 
+    public Collection<Group> getSubgroups() {
+        return this.subgroups.values();
+    }
+
     public void addHost(Host host) {
         this.hosts.put(host.getName(), host);
+    }
+
+    public void addSubgroup(Group subgroup) {
+        this.subgroups.put(subgroup.getName(), subgroup);
     }
 
     public void removeHost(String host) {
         this.hosts.remove(host);
     }
 
+    public void removeSubgroup(String subgroup) {
+        this.subgroups.remove(subgroup);
+    }
+
     public void clear() {
         this.hosts.clear();
+        this.subgroups.clear();
     }
 
     @Override

@@ -58,12 +58,16 @@ public class InventoryReaderTest {
         Assert.assertEquals(3, group.getHosts().size());
 
         for (Host h : group.getHosts()) {
-            if (h.getName().equals("host1")) {
-                Assert.assertEquals(3, h.getVariables().size());
-            } else if (h.getName().equals("host2")) {
-                Assert.assertEquals(0, h.getVariables().size());
-            } else if (h.getName().equals("host3")) {
-                Assert.assertEquals(1, h.getVariables().size());
+            switch (h.getName()) {
+                case "host1":
+                    Assert.assertEquals(3, h.getVariables().size());
+                    break;
+                case "host2":
+                    Assert.assertEquals(0, h.getVariables().size());
+                    break;
+                case "host3":
+                    Assert.assertEquals(1, h.getVariables().size());
+                    break;
             }
         }
 
@@ -102,6 +106,55 @@ public class InventoryReaderTest {
 
         Assert.assertEquals(1, inventory.getGroups().size());
         Assert.assertEquals(0, inventory.getGroups().iterator().next().getHosts().size());
+    }
+
+    @Test
+    public void testReadSubgroup() {
+        final String inventoryText = "[subgroup1]\nhost1\n[subgroup2]\nhost2\n[group1:children]\nsubgroup1\nsubgroup2\n";
+
+        Inventory inventory = InventoryReader.read(inventoryText);
+
+        Assert.assertEquals(3, inventory.getGroups().size());
+
+        for (Group group : inventory.getGroups()) {
+            if (group.getName().equals("group1")) {
+                Assert.assertEquals(2, group.getSubgroups().size());
+            }
+        }
+    }
+
+    @Test
+    public void testReadGroupVars() {
+        final String inventoryText = "[subgroup1]\nhost1\n[subgroup2]\nhost2\n[group1:children]\nsubgroup1\nsubgroup2\n[group1:vars]\nvar1=value1\n";
+
+        Inventory inventory = InventoryReader.read(inventoryText);
+
+        Assert.assertEquals(3, inventory.getGroups().size());
+
+        for (Group group : inventory.getGroups()) {
+            if (group.getName().equals("group1")) {
+                Assert.assertEquals("var1", group.getSubgroups().iterator().next().getHosts().iterator().next().getVariables().iterator().next().getName());
+                Assert.assertEquals("value1", group.getSubgroups().iterator().next().getHosts().iterator().next().getVariables().iterator().next().getValue());
+            }
+        }
+    }
+
+    @Test
+    public void testReadAnsibleExample() {
+        final String inventoryText = "[atlanta]\nhost1\nhost2\n\n[raleigh]\nhost2\nhost3\n\n[southeast:children]\n" +
+                "atlanta\nraleigh\n\n[southeast:vars]\nsome_server=foo.southeast.example.com\nhalon_system_timeout=30" +
+                "\nself_destruct_countdown=60\nescape_pods=2\n\n[usa:children]\nsoutheast\nnortheast\nsouthwest\n" +
+                "northwest\n";
+
+        Inventory inventory = InventoryReader.read(inventoryText);
+
+        Assert.assertEquals(4, inventory.getGroups().size());
+
+        for (Group group : inventory.getGroups()) {
+            if (group.getName().equals("southeast")) {
+                Assert.assertEquals(4, group.getSubgroups().iterator().next().getHosts().iterator().next().getVariables().size());
+            }
+        }
     }
 
 }

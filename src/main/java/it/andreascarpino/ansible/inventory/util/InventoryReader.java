@@ -40,11 +40,13 @@ public class InventoryReader {
         Group group = null;
         Host host = null;
         boolean skipComment = false;
+        boolean isVarsBlock = false;
+        boolean isChildrenBlock = false;
         while (tokenizer.hasMoreTokens()) {
             final String token = tokenizer.nextToken();
 
-            // New line, reset any flag
-            if (token.equals("\n")) {
+            // New line, reset the comment flag
+            if ("\n".equals(token)) {
                 skipComment = false;
                 continue;
             }
@@ -55,7 +57,7 @@ public class InventoryReader {
             }
 
             // Ignore separators
-            if (token.equals(" ") || token.equals("\t") || token.equals("\r") || token.equals("\f")) {
+            if (" ".equals(token) || "\t".equals(token) || "\r".equals(token) || "\f".equals(token)) {
                 continue;
             }
 
@@ -66,19 +68,59 @@ public class InventoryReader {
             }
 
             if (token.startsWith("[")) {
-                group = new Group(token.replaceAll("^\\[", "").replaceAll("]$", ""));
-                inventory.addGroup(group);
+                host = null;
+                isChildrenBlock = false;
+                isVarsBlock = false;
+
+                String groupName = token.replaceAll("^\\[", "").replaceAll("]$", "");
+
+                if (groupName.contains(":")) {
+                    final String[] g = groupName.split(":");
+
+                    groupName = g[0];
+
+                    if ("vars".equals(g[1])) {
+                        isVarsBlock = true;
+                        group = inventory.getGroup(groupName);
+                    } else if ("children".equals(g[1])) {
+                        isChildrenBlock = true;
+                        group = new Group(groupName);
+                        inventory.addGroup(group);
+                    }
+                } else {
+                    group = new Group(groupName);
+                    inventory.addGroup(group);
+                }
             } else if (token.contains("=")) {
+                final String[] v = token.split("=");
+                final Variable variable = new Variable(v[0], v[1]);
+
                 if (host != null) {
-                    final String[] v = token.split("=");
-                    host.addVariable(new Variable(v[0], v[1]));
+                    host.addVariable(variable);
+                } else if (isVarsBlock && group != null) {
+                    for (Group s : group.getSubgroups()) {
+                        for (Host h : s.getHosts()) {
+                            h.addVariable(variable);
+                        }
+                    }
+                    for (Host h : group.getHosts()) {
+                        h.addVariable(variable);
+                    }
                 }
             } else {
-                host = new Host(token);
-                if (group != null) {
-                    group.addHost(host);
-                } else {
+                if (group == null) {
+                    host = new Host(token);
                     inventory.addHost(host);
+                } else if (isChildrenBlock) {
+                    final Group g = inventory.getGroup(token);
+                    if (g != null) {
+                        group.addSubgroup(g);
+                    } else {
+                        group.addSubgroup(new Group(token));
+                    }
+                } else {
+                    host = new Host(token);
+                    group.addHost(host);
                 }
             }
         }

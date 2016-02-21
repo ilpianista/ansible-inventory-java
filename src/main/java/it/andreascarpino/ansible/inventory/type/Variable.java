@@ -19,7 +19,6 @@ package it.andreascarpino.ansible.inventory.type;
 
 /**
  * @author Andrea Scarpino
- *
  * @see Constants
  */
 public class Variable {

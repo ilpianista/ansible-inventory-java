@@ -27,58 +27,70 @@ import java.util.Map;
  */
 public class Inventory {
 
-    private Map<String, Host> hosts;
+	private Map<String, Host> hosts;
 
-    private Map<String, Group> groups;
+	private Map<String, Group> groups;
 
-    public Inventory() {
-        super();
-        this.hosts = new HashMap<>();
-        this.groups = new HashMap<>();
-    }
+	public Inventory() {
+		super();
+		this.hosts = new HashMap<>();
+		this.groups = new HashMap<>();
+	}
 
-    public Inventory(List<Group> groups) {
-        this();
+	public Inventory(List<Host> hosts) {
+		this();
 
-        for (Group g : groups) {
-            this.groups.put(g.getName(), g);
-        }
-    }
+		if (hosts != null) {
+			for (Host h : hosts) {
+				this.hosts.put(h.getName(), h);
+			}
+		}
+	}
 
-    public Collection<Host> getHosts() {
-        return this.hosts.values();
-    }
+	public Inventory(List<Host> hosts, List<Group> groups) {
+		this(hosts);
 
-    public Collection<Group> getGroups() {
-        return this.groups.values();
-    }
+		if (groups != null) {
+			for (Group g : groups) {
+				this.groups.put(g.getName(), g);
+			}
+		}
+	}
 
-    public void addHost(Host host) {
-        this.hosts.put(host.getName(), host);
-    }
+	public Collection<Host> getHosts() {
+		return this.hosts.values();
+	}
 
-    public void addGroup(Group group) {
-        this.groups.put(group.getName(), group);
-    }
+	public Collection<Group> getGroups() {
+		return this.groups.values();
+	}
 
-    public Host getHost(String host) {
-        return this.hosts.get(host);
-    }
+	public void addHost(Host host) {
+		this.hosts.put(host.getName(), host);
+	}
 
-    public Group getGroup(String group) {
-        return this.groups.get(group);
-    }
+	public void addGroup(Group group) {
+		this.groups.put(group.getName(), group);
+	}
 
-    public void removeHost(String host) {
-        this.hosts.remove(host);
-    }
+	public Host getHost(String host) {
+		return this.hosts.get(host);
+	}
 
-    public void removeGroup(String group) {
-        this.groups.remove(group);
-    }
+	public Group getGroup(String group) {
+		return this.groups.get(group);
+	}
 
-    public void clear() {
-        this.hosts.clear();
-        this.groups.clear();
-    }
+	public void removeHost(String host) {
+		this.hosts.remove(host);
+	}
+
+	public void removeGroup(String group) {
+		this.groups.remove(group);
+	}
+
+	public void clear() {
+		this.hosts.clear();
+		this.groups.clear();
+	}
 }

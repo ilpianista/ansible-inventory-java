@@ -27,56 +27,66 @@ import java.util.Map;
  */
 public class Host {
 
-    private String name;
+	private String name;
 
-    private Map<String, Variable> variables;
+	private Map<String, Variable> variables;
 
-    public Host(String name) {
-        super();
-        this.name = name;
-        this.variables = new HashMap<String, Variable>();
-    }
+	public Host(String name) {
+		super();
+		this.name = name;
+		this.variables = new HashMap<>();
+	}
 
-    public Host(String name, List<Variable> variables) {
-        this(name);
+	public Host(String name, List<Variable> variables) {
+		this(name);
 
-        for (Variable v : variables) {
-            this.variables.put(v.getName(), v);
-        }
-    }
+		if (variables != null) {
+			for (Variable v : variables) {
+				this.variables.put(v.getName(), v);
+			}
+		}
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public Collection<Variable> getVariables() {
-        return this.variables.values();
-    }
+	public Collection<Variable> getVariables() {
+		return this.variables.values();
+	}
 
-    public void addVariable(Variable variable) {
-        this.variables.put(variable.getName(), variable);
-    }
+	public void addVariable(Variable variable) {
+		this.variables.put(variable.getName(), variable);
+	}
 
-    public void removeVariable(String variable) {
-        this.variables.remove(variable);
-    }
+	public void addVariables(List<Variable> variables) {
+		for (Variable v : variables) {
+			addVariable(v);
+		}
+	}
 
-    public void clear() {
-        this.variables.clear();
-    }
+	public void removeVariable(String variable) {
+		this.variables.remove(variable);
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+	public void clear() {
+		this.variables.clear();
+	}
 
-        Host host = (Host) o;
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if ((o == null) || (getClass() != o.getClass()))
+			return false;
 
-        return name.equals(host.name);
-    }
+		Host host = (Host) o;
 
-    @Override
-    public int hashCode() {
-        return name.hashCode();
-    }
+		return name.equals(host.name);
+	}
+
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
 }

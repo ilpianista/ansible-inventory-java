@@ -17,85 +17,144 @@
  */
 package it.andreascarpino.ansible.inventory.util;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import it.andreascarpino.ansible.inventory.type.Group;
 import it.andreascarpino.ansible.inventory.type.Host;
 import it.andreascarpino.ansible.inventory.type.Inventory;
 import it.andreascarpino.ansible.inventory.type.Variable;
-
-import java.io.IOException;
-import java.io.OutputStream;
 
 /**
  * @author Andrea Scarpino
  */
 public class InventoryWriter {
 
-    private InventoryWriter() {
-    }
+	private InventoryWriter() {
+	}
 
-    private static String groupHeader(String group) {
-        return "[" + group + "]\n";
-    }
+	private static String groupHeader(String group) {
+		return "[" + group + "]\n";
+	}
 
-    private static String variableBlock(Variable variable) {
-        return " " + variable.getName() + "=" + variable.getValue();
-    }
+	private static String variableBlock(Variable variable) {
+		return variable.getName() + "=" + variable.getValue();
+	}
 
-    private static String printHost(Host host) {
-        final StringBuilder builder = new StringBuilder();
-        builder.append(host.getName());
+	private static String groupVarsHeader(String group) {
+		return "[" + group + ":vars]\n";
+	}
 
-        for (Variable variable : host.getVariables()) {
-            builder.append(variableBlock(variable));
-        }
+	private static String groupOfGroupHeader(String group) {
+		return "[" + group + ":children]\n";
+	}
 
-        builder.append("\n");
+	private static String printHost(Host host) {
+		final StringBuilder builder = new StringBuilder();
+		builder.append(host.getName());
 
-        return builder.toString();
-    }
+		for (Variable variable : host.getVariables()) {
+			builder.append(" " + variableBlock(variable));
+		}
 
-    private static void printHost(Host host, OutputStream stream) throws IOException {
-        stream.write(host.getName().getBytes());
+		builder.append("\n");
 
-        for (Variable variable : host.getVariables()) {
-            stream.write(variableBlock(variable).getBytes());
-        }
+		return builder.toString();
+	}
 
-        stream.write("\n".getBytes());
-    }
+	private static void printHost(Host host, OutputStream stream) throws IOException {
+		stream.write(host.getName().getBytes());
 
-    public static String write(Inventory inventory) {
-        final StringBuilder builder = new StringBuilder();
+		for (Variable variable : host.getVariables()) {
+			stream.write((" " + variableBlock(variable)).getBytes());
+		}
 
-        for (Host host : inventory.getHosts()) {
-            builder.append(printHost(host));
-        }
+		stream.write("\n".getBytes());
+	}
 
-        for (Group group : inventory.getGroups()) {
-            builder.append(groupHeader(group.getName()));
+	public static String write(Inventory inventory) {
+		final StringBuilder builder = new StringBuilder();
 
-            for (Host host : group.getHosts()) {
-                builder.append(printHost(host));
-            }
-        }
+		for (Host host : inventory.getHosts()) {
+			builder.append(printHost(host));
+		}
 
-        return builder.toString();
-    }
+		for (Group group : inventory.getGroups()) {
+			if (!group.getSubgroups().isEmpty()) {
+				builder.append(groupOfGroupHeader(group.getName()));
 
-    public static void write(Inventory inventory, OutputStream stream) throws IOException {
-        for (Host host : inventory.getHosts()) {
-            printHost(host, stream);
-        }
+				if (!group.getSubgroups().isEmpty()) {
+					for (Group g : group.getSubgroups()) {
+						builder.append(g.getName() + "\n");
+					}
+				} else {
+					builder.append("\n");
+				}
+			}
 
-        for (Group group : inventory.getGroups()) {
-            stream.write(groupHeader(group.getName()).getBytes());
+			if (!group.getHosts().isEmpty()) {
+				builder.append(groupHeader(group.getName()));
 
-            for (Host host : group.getHosts()) {
-                printHost(host, stream);
-            }
+				for (Host host : group.getHosts()) {
+					builder.append(printHost(host));
+				}
+			}
 
-            stream.write("\n".getBytes());
-        }
-    }
+			if (!group.getVariables().isEmpty()) {
+				builder.append(groupVarsHeader(group.getName()));
+
+				if (!group.getVariables().isEmpty()) {
+					for (Variable variable : group.getVariables()) {
+						builder.append(variableBlock(variable) + "\n");
+					}
+				} else {
+					builder.append("\n");
+				}
+			}
+		}
+
+		return builder.toString();
+	}
+
+	public static void write(Inventory inventory, OutputStream stream) throws IOException {
+		for (Host host : inventory.getHosts()) {
+			printHost(host, stream);
+		}
+
+		for (Group group : inventory.getGroups()) {
+			if (!group.getSubgroups().isEmpty()) {
+				stream.write(groupOfGroupHeader(group.getName()).getBytes());
+
+				if (!group.getSubgroups().isEmpty()) {
+					for (Group g : group.getSubgroups()) {
+						stream.write((g.getName() + "\n").getBytes());
+					}
+				} else {
+					stream.write("\n".getBytes());
+				}
+			}
+
+			if (!group.getHosts().isEmpty()) {
+				stream.write(groupHeader(group.getName()).getBytes());
+
+				for (Host host : group.getHosts()) {
+					printHost(host, stream);
+				}
+			}
+
+			if (!group.getVariables().isEmpty()) {
+				stream.write("\n".getBytes());
+				stream.write(groupVarsHeader(group.getName()).getBytes());
+
+				if (!group.getVariables().isEmpty()) {
+					for (Variable variable : group.getVariables()) {
+						stream.write((variableBlock(variable) + "\n").getBytes());
+					}
+				} else {
+					stream.write("\n".getBytes());
+				}
+			}
+		}
+	}
 
 }

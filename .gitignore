@@ -24,3 +24,9 @@ buildNumber.properties
 *.iws
 *.iml
 /out/
+
+# Eclipse
+.metatada
+.settings/
+.classpath
+.project

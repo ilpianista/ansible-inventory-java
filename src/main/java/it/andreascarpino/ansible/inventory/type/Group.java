@@ -27,72 +27,122 @@ import java.util.Map;
  */
 public class Group {
 
-    private String name;
+	private String name;
 
-    private Map<String, Host> hosts;
+	private Map<String, Host> hosts;
 
-    private Map<String, Group> subgroups;
+	private Map<String, Group> subgroups;
 
-    public Group(String name) {
-        super();
-        this.name = name;
-        this.hosts = new HashMap<>();
-        this.subgroups = new HashMap<>();
-    }
+	private Map<String, Variable> variables;
 
-    public Group(String name, List<Host> hosts) {
-        this(name);
+	public Group(String name) {
+		super();
+		this.name = name;
+		this.hosts = new HashMap<>();
+		this.subgroups = new HashMap<>();
+		this.variables = new HashMap<>();
+	}
 
-        for (Host h : hosts) {
-            this.hosts.put(h.getName(), h);
-        }
-    }
+	public Group(String name, List<Host> hosts) {
+		this(name);
 
-    public String getName() {
-        return name;
-    }
+		if (hosts != null) {
+			for (Host h : hosts) {
+				this.hosts.put(h.getName(), h);
+			}
+		}
+	}
 
-    public Collection<Host> getHosts() {
-        return this.hosts.values();
-    }
+	public Group(String name, List<Host> hosts, List<Variable> variables) {
+		this(name, hosts);
 
-    public Collection<Group> getSubgroups() {
-        return this.subgroups.values();
-    }
+		if (variables != null) {
+			for (Variable v : variables) {
+				this.variables.put(v.getName(), v);
+			}
+		}
+	}
 
-    public void addHost(Host host) {
-        this.hosts.put(host.getName(), host);
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void addSubgroup(Group subgroup) {
-        this.subgroups.put(subgroup.getName(), subgroup);
-    }
+	public Collection<Host> getHosts() {
+		return this.hosts.values();
+	}
 
-    public void removeHost(String host) {
-        this.hosts.remove(host);
-    }
+	public Collection<Group> getSubgroups() {
+		return this.subgroups.values();
+	}
 
-    public void removeSubgroup(String subgroup) {
-        this.subgroups.remove(subgroup);
-    }
+	public Collection<Variable> getVariables() {
+		return this.variables.values();
+	}
 
-    public void clear() {
-        this.hosts.clear();
-        this.subgroups.clear();
-    }
+	public void addHost(Host host) {
+		this.hosts.put(host.getName(), host);
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+	public void addHosts(List<Host> hosts) {
+		for (Host h : hosts) {
+			addHost(h);
+		}
+	}
 
-        Group group = (Group) o;
+	public void addSubgroup(Group subgroup) {
+		this.subgroups.put(subgroup.getName(), subgroup);
+	}
 
-        return name.equals(group.name);
-    }
+	public void addVariable(Variable variable) {
+		this.variables.put(variable.getName(), variable);
+	}
 
-    @Override
-    public int hashCode() {
-        return name.hashCode();
-    }
+	public void addVariables(List<Variable> variables) {
+		for (Variable v : variables) {
+			addVariable(v);
+		}
+	}
+
+	public Host getHost(String host) {
+		return this.hosts.get(host);
+	}
+
+	public Variable getVariable(String variable) {
+		return this.variables.get(variable);
+	}
+
+	public void removeHost(String host) {
+		this.hosts.remove(host);
+	}
+
+	public void removeSubgroup(String subgroup) {
+		this.subgroups.remove(subgroup);
+	}
+
+	public void removeVariable(String variable) {
+		this.variables.remove(variable);
+	}
+
+	public void clear() {
+		this.hosts.clear();
+		this.subgroups.clear();
+		this.variables.clear();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if ((o == null) || (getClass() != o.getClass()))
+			return false;
+
+		Group group = (Group) o;
+
+		return name.equals(group.name);
+	}
+
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
 }

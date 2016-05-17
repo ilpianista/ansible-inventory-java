@@ -17,46 +17,157 @@
  */
 package it.andreascarpino.ansible.inventory;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import it.andreascarpino.ansible.inventory.type.Group;
 import it.andreascarpino.ansible.inventory.type.Host;
 import it.andreascarpino.ansible.inventory.type.Inventory;
 import it.andreascarpino.ansible.inventory.type.Variable;
 import it.andreascarpino.ansible.inventory.util.InventoryWriter;
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
 /**
  * @author Andrea Scarpino
  */
 public class InventoryWriterTest {
 
-    @Test
-    public void testWriteSimple() {
-        Inventory inventory = new Inventory();
+	@Test
+	public void testWriteHostAndGroups() {
+		Inventory inventory = new Inventory();
 
-        Group group = new Group("group1");
-        inventory.addGroup(group);
+		Host mail = new Host("mail.example.com");
+		inventory.addHost(mail);
 
-        Host host = new Host("host1");
-        group.addHost(host);
+		Group webservers = new Group("webservers");
+		inventory.addGroup(webservers);
 
-        Variable var = new Variable("var1", "value1");
-        host.addVariable(var);
+		Host foo = new Host("foo.example.com");
+		webservers.addHost(foo);
 
-        String inventoryText = InventoryWriter.write(inventory);
+		Host bar = new Host("bar.example.com");
+		webservers.addHost(bar);
 
-        Assert.assertEquals("[group1]\nhost1 var1=value1\n", inventoryText);
+		Group dbservers = new Group("dbservers");
+		inventory.addGroup(dbservers);
 
-        inventory = new Inventory();
+		Host one = new Host("one.example.com");
+		dbservers.addHost(one);
 
-        inventory.addHost(host);
+		Host two = new Host("two.example.com");
+		dbservers.addHost(two);
 
-        inventoryText = InventoryWriter.write(inventory);
+		Host three = new Host("three.example.com");
+		dbservers.addHost(three);
 
-        Assert.assertEquals("host1 var1=value1\n", inventoryText);
-    }
+		String inventoryText = InventoryWriter.write(inventory);
+
+		Assert.assertEquals(
+				"mail.example.com\n[dbservers]\nthree.example.com\none.example.com\ntwo.example.com\n[webservers]\nfoo.example.com\nbar.example.com\n",
+				inventoryText);
+	}
+
+	@Test
+	public void testWriteHostVariables() {
+		Inventory inventory = new Inventory();
+
+		Group atlanta = new Group("atlanta");
+		inventory.addGroup(atlanta);
+
+		Host host1 = new Host("host1");
+		atlanta.addHost(host1);
+
+		Variable host1_http_port = new Variable("http_port", "80");
+		host1.addVariable(host1_http_port);
+		Variable host1_maxRequestsPerChild = new Variable("maxRequestsPerChild", "808");
+		host1.addVariable(host1_maxRequestsPerChild);
+
+		Host host2 = new Host("host2");
+		atlanta.addHost(host2);
+
+		Variable host2_http_port = new Variable("http_port", "303");
+		host2.addVariable(host2_http_port);
+		Variable host2_maxRequestsPerChild = new Variable("maxRequestsPerChild", "909");
+		host2.addVariable(host2_maxRequestsPerChild);
+
+		String inventoryText = InventoryWriter.write(inventory);
+
+		Assert.assertEquals(
+				"[atlanta]\nhost1 http_port=80 maxRequestsPerChild=808\nhost2 http_port=303 maxRequestsPerChild=909\n",
+				inventoryText);
+	}
+
+	@Test
+	public void testWriteGroupVariables() {
+		Inventory inventory = new Inventory();
+
+		Group atlanta = new Group("atlanta");
+		inventory.addGroup(atlanta);
+
+		Host host1 = new Host("host1");
+		atlanta.addHost(host1);
+
+		Host host2 = new Host("host2");
+		atlanta.addHost(host2);
+
+		Variable ntp_server = new Variable("ntp_server", "ntp.atlanta.example.com");
+		atlanta.addVariable(ntp_server);
+		Variable proxy = new Variable("proxy", "proxy.atlanta.example.com");
+		atlanta.addVariable(proxy);
+
+		String inventoryText = InventoryWriter.write(inventory);
+
+		Assert.assertEquals(
+				"[atlanta]\nhost1\nhost2\n[atlanta:vars]\nproxy=proxy.atlanta.example.com\nntp_server=ntp.atlanta.example.com\n",
+				inventoryText);
+	}
+
+	@Test
+	public void testWriteSubGroupsAndGroupsVars() {
+		Inventory inventory = new Inventory();
+
+		Group atlanta = new Group("atlanta");
+		inventory.addGroup(atlanta);
+
+		Host host1 = new Host("host1");
+		atlanta.addHost(host1);
+
+		Host host2 = new Host("host2");
+		atlanta.addHost(host2);
+
+		Group raleigh = new Group("raleigh");
+		inventory.addGroup(raleigh);
+
+		raleigh.addHost(host2);
+
+		Host host3 = new Host("host3");
+		raleigh.addHost(host3);
+
+		Group southeast = new Group("southeast");
+		southeast.addSubgroup(raleigh);
+		southeast.addSubgroup(atlanta);
+		inventory.addGroup(southeast);
+
+		Variable some_server = new Variable("some_server", "foo.southeast.example.com");
+		southeast.addVariable(some_server);
+		Variable halon_system_timeout = new Variable("halon_system_timeout", "30");
+		southeast.addVariable(halon_system_timeout);
+		Variable self_destruct_countdown = new Variable("self_destruct_countdown", "60");
+		southeast.addVariable(self_destruct_countdown);
+		Variable escape_pods = new Variable("escape_pods", "2");
+		southeast.addVariable(escape_pods);
+
+		Group usa = new Group("usa");
+		usa.addSubgroup(southeast);
+		usa.addSubgroup(new Group("northeast"));
+		usa.addSubgroup(new Group("southwest"));
+		usa.addSubgroup(new Group("northwest"));
+		inventory.addGroup(usa);
+
+		String inventoryText = InventoryWriter.write(inventory);
+
+		Assert.assertEquals(
+				"[usa:children]\nsouthwest\nnorthwest\nnortheast\nsoutheast\n[atlanta]\nhost1\nhost2\n[southeast:children]\natlanta\nraleigh\n[southeast:vars]\nself_destruct_countdown=60\nhalon_system_timeout=30\nsome_server=foo.southeast.example.com\nescape_pods=2\n[raleigh]\nhost3\nhost2\n",
+				inventoryText);
+	}
 
 }

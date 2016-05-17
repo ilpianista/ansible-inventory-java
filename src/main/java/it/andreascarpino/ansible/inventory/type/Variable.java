@@ -23,44 +23,55 @@ package it.andreascarpino.ansible.inventory.type;
  */
 public class Variable {
 
-    private String name;
+	private String name;
 
-    private String value;
+	private Object value;
 
-    public Variable(String name) {
-        super();
-        this.name = name;
-    }
+	public Variable(String name) {
+		super();
+		this.name = name;
+	}
 
-    public Variable(String name, String value) {
-        this(name);
-        this.value = value;
-    }
+	public Variable(String name, Object value) {
+		this(name);
+		this.value = value;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getValue() {
-        return value;
-    }
+	public Object getValue() {
+		return value;
+	}
 
-    public void setValue(String value) {
-        this.value = value;
-    }
+	public void setValue(Object value) {
+		this.value = value;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = (prime * result) + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
 
-        Variable variable = (Variable) o;
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Variable other = (Variable) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
+	}
 
-        return name.equals(variable.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return name.hashCode();
-    }
 }

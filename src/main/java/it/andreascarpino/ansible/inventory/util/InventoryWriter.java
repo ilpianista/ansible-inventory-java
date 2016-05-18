@@ -38,7 +38,10 @@ public class InventoryWriter {
 	}
 
 	private static String variableBlock(Variable variable) {
-		return variable.getName() + "=" + variable.getValue();
+		final String val = variable.getValue().toString();
+
+		// Escape backslashes for YAML
+		return variable.getName() + "=" + val.replace("\\", "\\\\");
 	}
 
 	private static String groupVarsHeader(String group) {

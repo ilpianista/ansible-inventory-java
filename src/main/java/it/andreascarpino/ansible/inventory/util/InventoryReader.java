@@ -93,7 +93,8 @@ public class InventoryReader {
 				}
 			} else if (token.contains("=")) {
 				final String[] v = token.split("=");
-				final Variable variable = new Variable(v[0], v[1]);
+				// Replace YAML backslashes escapes
+				final Variable variable = new Variable(v[0], v[1].replace("\\\\", "\\"));
 
 				if (host != null) {
 					host.addVariable(variable);

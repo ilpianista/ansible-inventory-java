@@ -17,10 +17,9 @@
  */
 package it.andreascarpino.ansible.inventory.type;
 
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Andrea Scarpino
@@ -29,12 +28,12 @@ public class Host {
 
 	private String name;
 
-	private Map<String, Variable> variables;
+	private Set<Variable> variables;
 
 	public Host(String name) {
 		super();
 		this.name = name;
-		this.variables = new HashMap<>();
+		this.variables = new HashSet<>();
 	}
 
 	public Host(String name, List<Variable> variables) {
@@ -42,7 +41,7 @@ public class Host {
 
 		if (variables != null) {
 			for (Variable v : variables) {
-				this.variables.put(v.getName(), v);
+				this.variables.add(v);
 			}
 		}
 	}
@@ -51,12 +50,12 @@ public class Host {
 		return name;
 	}
 
-	public Collection<Variable> getVariables() {
-		return this.variables.values();
+	public Set<Variable> getVariables() {
+		return this.variables;
 	}
 
 	public void addVariable(Variable variable) {
-		this.variables.put(variable.getName(), variable);
+		this.variables.add(variable);
 	}
 
 	public void addVariables(List<Variable> variables) {
@@ -65,8 +64,18 @@ public class Host {
 		}
 	}
 
-	public void removeVariable(String variable) {
-		this.variables.remove(variable);
+	public Variable getVariable(String variableName) {
+		for (Variable v : variables) {
+			if (v.getName().equals(variableName)) {
+				return v;
+			}
+		}
+
+		return null;
+	}
+
+	public void removeVariable(String variableName) {
+		this.variables.remove(variableName);
 	}
 
 	public void clear() {

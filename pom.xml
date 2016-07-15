@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>it.andreascarpino</groupId>
-    <artifactId>ansible-static-inventory</artifactId>
+    <artifactId>ansible-inventory-java</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <name>Ansible Static Inventory</name>
+    <name>Ansible Inventory Java</name>
     <description>A library to read and write Ansible static inventories</description>
-    <url>https://gitlab.com/ilpianista/ansible-static-inventory</url>
+    <url>https://gitlab.com/ilpianista/ansible-inventory-java</url>
 
     <licenses>
         <license>
@@ -21,7 +21,7 @@
     </licenses>
 
     <scm>
-        <url>https://gitlab.com/ilpianista/ansible-static-inventory.git</url>
+        <url>https://gitlab.com/ilpianista/ansible-inventory-java.git</url>
     </scm>
 
     <build>

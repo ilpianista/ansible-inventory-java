@@ -20,45 +20,45 @@ package it.andreascarpino.ansible.inventory;
 import org.junit.Assert;
 import org.junit.Test;
 
-import it.andreascarpino.ansible.inventory.type.Group;
-import it.andreascarpino.ansible.inventory.type.Host;
-import it.andreascarpino.ansible.inventory.type.Inventory;
-import it.andreascarpino.ansible.inventory.type.Variable;
-import it.andreascarpino.ansible.inventory.util.InventoryReader;
+import it.andreascarpino.ansible.inventory.type.AnsibleGroup;
+import it.andreascarpino.ansible.inventory.type.AnsibleHost;
+import it.andreascarpino.ansible.inventory.type.AnsibleInventory;
+import it.andreascarpino.ansible.inventory.type.AnsibleVariable;
+import it.andreascarpino.ansible.inventory.util.AnsibleInventoryReader;
 
 /**
  * @author Andrea Scarpino
  */
-public class InventoryReaderTest {
+public class AnsibleInventoryReaderTest {
 
 	@Test
 	public void testReadSimple() {
 		String inventoryText = "[group1]\nhost1 var1=value1\n";
 
-		Inventory inventory = InventoryReader.read(inventoryText);
+		AnsibleInventory inventory = AnsibleInventoryReader.read(inventoryText);
 
 		Assert.assertEquals(1, inventory.getGroups().size());
-		Group group = inventory.getGroups().iterator().next();
+		AnsibleGroup group = inventory.getGroups().iterator().next();
 		Assert.assertEquals("group1", group.getName());
 		Assert.assertEquals(1, group.getHosts().size());
 
-		Host host = group.getHosts().iterator().next();
+		AnsibleHost host = group.getHosts().iterator().next();
 		Assert.assertEquals("host1", host.getName());
 		Assert.assertEquals(1, host.getVariables().size());
 
-		Variable variable = host.getVariables().iterator().next();
+		AnsibleVariable variable = host.getVariables().iterator().next();
 		Assert.assertEquals("var1", variable.getName());
 		Assert.assertEquals("value1", variable.getValue());
 
 		inventoryText = "[group1]\nhost1 var1=value1 var2=value2 var3=value3\nhost2\nhost3 var1=value1";
 
-		inventory = InventoryReader.read(inventoryText);
+		inventory = AnsibleInventoryReader.read(inventoryText);
 		group = inventory.getGroups().iterator().next();
 
 		Assert.assertEquals(1, inventory.getGroups().size());
 		Assert.assertEquals(3, group.getHosts().size());
 
-		for (Host h : group.getHosts()) {
+		for (AnsibleHost h : group.getHosts()) {
 			switch (h.getName()) {
 			case "host1":
 				Assert.assertEquals(3, h.getVariables().size());
@@ -74,7 +74,7 @@ public class InventoryReaderTest {
 
 		inventoryText = "host1 var1=value1";
 
-		inventory = InventoryReader.read(inventoryText);
+		inventory = AnsibleInventoryReader.read(inventoryText);
 
 		Assert.assertEquals(0, inventory.getGroups().size());
 		Assert.assertEquals(1, inventory.getHosts().size());
@@ -85,7 +85,7 @@ public class InventoryReaderTest {
 	public void testReadNoGroup() {
 		final String inventoryText = "host1 var1=value1\n";
 
-		Inventory inventory = InventoryReader.read(inventoryText);
+		AnsibleInventory inventory = AnsibleInventoryReader.read(inventoryText);
 
 		Assert.assertEquals(0, inventory.getGroups().size());
 	}
@@ -94,7 +94,7 @@ public class InventoryReaderTest {
 	public void testReadSkipComments() {
 		final String inventoryText = ";I'm a comment\nhost1 var1=value1\n";
 
-		Inventory inventory = InventoryReader.read(inventoryText);
+		AnsibleInventory inventory = AnsibleInventoryReader.read(inventoryText);
 
 		Assert.assertEquals(0, inventory.getGroups().size());
 	}
@@ -103,7 +103,7 @@ public class InventoryReaderTest {
 	public void testReadNoHosts() {
 		final String inventoryText = "[group1]\n";
 
-		Inventory inventory = InventoryReader.read(inventoryText);
+		AnsibleInventory inventory = AnsibleInventoryReader.read(inventoryText);
 
 		Assert.assertEquals(1, inventory.getGroups().size());
 		Assert.assertEquals(0, inventory.getGroups().iterator().next().getHosts().size());
@@ -113,11 +113,11 @@ public class InventoryReaderTest {
 	public void testReadSubgroup() {
 		final String inventoryText = "[subgroup1]\nhost1\n[subgroup2]\nhost2\n[group1:children]\nsubgroup1\nsubgroup2\n";
 
-		Inventory inventory = InventoryReader.read(inventoryText);
+		AnsibleInventory inventory = AnsibleInventoryReader.read(inventoryText);
 
 		Assert.assertEquals(3, inventory.getGroups().size());
 
-		for (Group group : inventory.getGroups()) {
+		for (AnsibleGroup group : inventory.getGroups()) {
 			if (group.getName().equals("group1")) {
 				Assert.assertEquals(2, group.getSubgroups().size());
 			}
@@ -128,11 +128,11 @@ public class InventoryReaderTest {
 	public void testReadGroupVars() {
 		final String inventoryText = "[subgroup1]\nhost1\n[subgroup2]\nhost2\n[group1:children]\nsubgroup1\nsubgroup2\n[group1:vars]\nvar1=value1\n";
 
-		Inventory inventory = InventoryReader.read(inventoryText);
+		AnsibleInventory inventory = AnsibleInventoryReader.read(inventoryText);
 
 		Assert.assertEquals(3, inventory.getGroups().size());
 
-		for (Group group : inventory.getGroups()) {
+		for (AnsibleGroup group : inventory.getGroups()) {
 			if (group.getName().equals("group1")) {
 				Assert.assertEquals("var1", group.getSubgroups().iterator().next().getHosts().iterator().next()
 						.getVariables().iterator().next().getName());
@@ -149,11 +149,11 @@ public class InventoryReaderTest {
 				+ "\nself_destruct_countdown=60\nescape_pods=2\n\n[usa:children]\nsoutheast\nnortheast\nsouthwest\n"
 				+ "northwest\n";
 
-		Inventory inventory = InventoryReader.read(inventoryText);
+		AnsibleInventory inventory = AnsibleInventoryReader.read(inventoryText);
 
 		Assert.assertEquals(4, inventory.getGroups().size());
 
-		for (Group group : inventory.getGroups()) {
+		for (AnsibleGroup group : inventory.getGroups()) {
 			if (group.getName().equals("southeast")) {
 				Assert.assertEquals(4,
 						group.getSubgroups().iterator().next().getHosts().iterator().next().getVariables().size());

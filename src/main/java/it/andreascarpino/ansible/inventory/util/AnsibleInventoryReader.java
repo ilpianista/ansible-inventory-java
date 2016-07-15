@@ -19,26 +19,26 @@ package it.andreascarpino.ansible.inventory.util;
 
 import java.util.StringTokenizer;
 
-import it.andreascarpino.ansible.inventory.type.Group;
-import it.andreascarpino.ansible.inventory.type.Host;
-import it.andreascarpino.ansible.inventory.type.Inventory;
-import it.andreascarpino.ansible.inventory.type.Variable;
+import it.andreascarpino.ansible.inventory.type.AnsibleGroup;
+import it.andreascarpino.ansible.inventory.type.AnsibleHost;
+import it.andreascarpino.ansible.inventory.type.AnsibleInventory;
+import it.andreascarpino.ansible.inventory.type.AnsibleVariable;
 
 /**
  * @author Andrea Scarpino
  */
-public class InventoryReader {
+public class AnsibleInventoryReader {
 
-	private InventoryReader() {
+	private AnsibleInventoryReader() {
 	}
 
-	public static Inventory read(String text) {
-		final Inventory inventory = new Inventory();
+	public static AnsibleInventory read(String text) {
+		final AnsibleInventory inventory = new AnsibleInventory();
 
 		final StringTokenizer tokenizer = new StringTokenizer(text, " \t\n\r\f", true);
 
-		Group group = null;
-		Host host = null;
+		AnsibleGroup group = null;
+		AnsibleHost host = null;
 		boolean skipComment = false;
 		boolean isVarsBlock = false;
 		boolean isChildrenBlock = false;
@@ -84,43 +84,43 @@ public class InventoryReader {
 						group = inventory.getGroup(groupName);
 					} else if ("children".equals(g[1])) {
 						isChildrenBlock = true;
-						group = new Group(groupName);
+						group = new AnsibleGroup(groupName);
 						inventory.addGroup(group);
 					}
 				} else {
-					group = new Group(groupName);
+					group = new AnsibleGroup(groupName);
 					inventory.addGroup(group);
 				}
 			} else if (token.contains("=")) {
 				final String[] v = token.split("=");
 				// Replace YAML backslashes escapes
-				final Variable variable = new Variable(v[0], v[1].replace("\\\\", "\\"));
+				final AnsibleVariable variable = new AnsibleVariable(v[0], v[1].replace("\\\\", "\\"));
 
 				if (host != null) {
 					host.addVariable(variable);
 				} else if (isVarsBlock && group != null) {
-					for (Group s : group.getSubgroups()) {
-						for (Host h : s.getHosts()) {
+					for (AnsibleGroup s : group.getSubgroups()) {
+						for (AnsibleHost h : s.getHosts()) {
 							h.addVariable(variable);
 						}
 					}
-					for (Host h : group.getHosts()) {
+					for (AnsibleHost h : group.getHosts()) {
 						h.addVariable(variable);
 					}
 				}
 			} else {
 				if (group == null) {
-					host = new Host(token);
+					host = new AnsibleHost(token);
 					inventory.addHost(host);
 				} else if (isChildrenBlock) {
-					final Group g = inventory.getGroup(token);
+					final AnsibleGroup g = inventory.getGroup(token);
 					if (g != null) {
 						group.addSubgroup(g);
 					} else {
-						group.addSubgroup(new Group(token));
+						group.addSubgroup(new AnsibleGroup(token));
 					}
 				} else {
-					host = new Host(token);
+					host = new AnsibleHost(token);
 					group.addHost(host);
 				}
 			}

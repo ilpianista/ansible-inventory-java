@@ -25,59 +25,59 @@ import java.util.Map;
 /**
  * @author Andrea Scarpino
  */
-public class Inventory {
+public class AnsibleInventory {
 
-	private Map<String, Host> hosts;
+	private Map<String, AnsibleHost> hosts;
 
-	private Map<String, Group> groups;
+	private Map<String, AnsibleGroup> groups;
 
-	public Inventory() {
+	public AnsibleInventory() {
 		super();
 		this.hosts = new HashMap<>();
 		this.groups = new HashMap<>();
 	}
 
-	public Inventory(List<Host> hosts) {
+	public AnsibleInventory(List<AnsibleHost> hosts) {
 		this();
 
 		if (hosts != null) {
-			for (Host h : hosts) {
+			for (AnsibleHost h : hosts) {
 				this.hosts.put(h.getName(), h);
 			}
 		}
 	}
 
-	public Inventory(List<Host> hosts, List<Group> groups) {
+	public AnsibleInventory(List<AnsibleHost> hosts, List<AnsibleGroup> groups) {
 		this(hosts);
 
 		if (groups != null) {
-			for (Group g : groups) {
+			for (AnsibleGroup g : groups) {
 				this.groups.put(g.getName(), g);
 			}
 		}
 	}
 
-	public Collection<Host> getHosts() {
+	public Collection<AnsibleHost> getHosts() {
 		return this.hosts.values();
 	}
 
-	public Collection<Group> getGroups() {
+	public Collection<AnsibleGroup> getGroups() {
 		return this.groups.values();
 	}
 
-	public void addHost(Host host) {
+	public void addHost(AnsibleHost host) {
 		this.hosts.put(host.getName(), host);
 	}
 
-	public void addGroup(Group group) {
+	public void addGroup(AnsibleGroup group) {
 		this.groups.put(group.getName(), group);
 	}
 
-	public Host getHost(String host) {
+	public AnsibleHost getHost(String host) {
 		return this.hosts.get(host);
 	}
 
-	public Group getGroup(String group) {
+	public AnsibleGroup getGroup(String group) {
 		return this.groups.get(group);
 	}
 

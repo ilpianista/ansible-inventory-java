@@ -24,23 +24,23 @@ import java.util.Set;
 /**
  * @author Andrea Scarpino
  */
-public class Host {
+public class AnsibleHost {
 
 	private String name;
 
-	private Set<Variable> variables;
+	private Set<AnsibleVariable> variables;
 
-	public Host(String name) {
+	public AnsibleHost(String name) {
 		super();
 		this.name = name;
 		this.variables = new HashSet<>();
 	}
 
-	public Host(String name, List<Variable> variables) {
+	public AnsibleHost(String name, List<AnsibleVariable> variables) {
 		this(name);
 
 		if (variables != null) {
-			for (Variable v : variables) {
+			for (AnsibleVariable v : variables) {
 				this.variables.add(v);
 			}
 		}
@@ -50,22 +50,22 @@ public class Host {
 		return name;
 	}
 
-	public Set<Variable> getVariables() {
+	public Set<AnsibleVariable> getVariables() {
 		return this.variables;
 	}
 
-	public void addVariable(Variable variable) {
+	public void addVariable(AnsibleVariable variable) {
 		this.variables.add(variable);
 	}
 
-	public void addVariables(List<Variable> variables) {
-		for (Variable v : variables) {
+	public void addVariables(List<AnsibleVariable> variables) {
+		for (AnsibleVariable v : variables) {
 			addVariable(v);
 		}
 	}
 
-	public Variable getVariable(String variableName) {
-		for (Variable v : variables) {
+	public AnsibleVariable getVariable(String variableName) {
+		for (AnsibleVariable v : variables) {
 			if (v.getName().equals(variableName)) {
 				return v;
 			}
@@ -89,7 +89,7 @@ public class Host {
 		if ((o == null) || (getClass() != o.getClass()))
 			return false;
 
-		Host host = (Host) o;
+		AnsibleHost host = (AnsibleHost) o;
 
 		return name.equals(host.name);
 	}

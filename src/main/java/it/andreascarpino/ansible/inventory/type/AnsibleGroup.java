@@ -25,17 +25,17 @@ import java.util.Map;
 /**
  * @author Andrea Scarpino
  */
-public class Group {
+public class AnsibleGroup {
 
 	private String name;
 
-	private Map<String, Host> hosts;
+	private Map<String, AnsibleHost> hosts;
 
-	private Map<String, Group> subgroups;
+	private Map<String, AnsibleGroup> subgroups;
 
-	private Map<String, Variable> variables;
+	private Map<String, AnsibleVariable> variables;
 
-	public Group(String name) {
+	public AnsibleGroup(String name) {
 		super();
 		this.name = name;
 		this.hosts = new HashMap<>();
@@ -43,21 +43,21 @@ public class Group {
 		this.variables = new HashMap<>();
 	}
 
-	public Group(String name, List<Host> hosts) {
+	public AnsibleGroup(String name, List<AnsibleHost> hosts) {
 		this(name);
 
 		if (hosts != null) {
-			for (Host h : hosts) {
+			for (AnsibleHost h : hosts) {
 				this.hosts.put(h.getName(), h);
 			}
 		}
 	}
 
-	public Group(String name, List<Host> hosts, List<Variable> variables) {
+	public AnsibleGroup(String name, List<AnsibleHost> hosts, List<AnsibleVariable> variables) {
 		this(name, hosts);
 
 		if (variables != null) {
-			for (Variable v : variables) {
+			for (AnsibleVariable v : variables) {
 				this.variables.put(v.getName(), v);
 			}
 		}
@@ -67,47 +67,47 @@ public class Group {
 		return name;
 	}
 
-	public Collection<Host> getHosts() {
+	public Collection<AnsibleHost> getHosts() {
 		return this.hosts.values();
 	}
 
-	public Collection<Group> getSubgroups() {
+	public Collection<AnsibleGroup> getSubgroups() {
 		return this.subgroups.values();
 	}
 
-	public Collection<Variable> getVariables() {
+	public Collection<AnsibleVariable> getVariables() {
 		return this.variables.values();
 	}
 
-	public void addHost(Host host) {
+	public void addHost(AnsibleHost host) {
 		this.hosts.put(host.getName(), host);
 	}
 
-	public void addHosts(List<Host> hosts) {
-		for (Host h : hosts) {
+	public void addHosts(List<AnsibleHost> hosts) {
+		for (AnsibleHost h : hosts) {
 			addHost(h);
 		}
 	}
 
-	public void addSubgroup(Group subgroup) {
+	public void addSubgroup(AnsibleGroup subgroup) {
 		this.subgroups.put(subgroup.getName(), subgroup);
 	}
 
-	public void addVariable(Variable variable) {
+	public void addVariable(AnsibleVariable variable) {
 		this.variables.put(variable.getName(), variable);
 	}
 
-	public void addVariables(List<Variable> variables) {
-		for (Variable v : variables) {
+	public void addVariables(List<AnsibleVariable> variables) {
+		for (AnsibleVariable v : variables) {
 			addVariable(v);
 		}
 	}
 
-	public Host getHost(String host) {
+	public AnsibleHost getHost(String host) {
 		return this.hosts.get(host);
 	}
 
-	public Variable getVariable(String variable) {
+	public AnsibleVariable getVariable(String variable) {
 		return this.variables.get(variable);
 	}
 
@@ -136,7 +136,7 @@ public class Group {
 		if ((o == null) || (getClass() != o.getClass()))
 			return false;
 
-		Group group = (Group) o;
+		AnsibleGroup group = (AnsibleGroup) o;
 
 		return name.equals(group.name);
 	}

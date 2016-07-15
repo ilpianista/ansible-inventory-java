@@ -20,7 +20,7 @@ package it.andreascarpino.ansible.inventory.type;
 /**
  * @author Andrea Scarpino
  */
-public class Constants {
+public class AnsibleConstants {
 
 	/**
 	 * Connection type to the host. Candidates are <code>local</code>,
@@ -242,7 +242,7 @@ public class Constants {
 	 */
 	public static final String ANSIBLE_WINRM_SERVER_CERT_VALIDATION = "ansible_winrm_server_cert_validation";
 
-	private Constants() {
+	private AnsibleConstants() {
 	}
 
 	/**

@@ -20,24 +20,24 @@ package it.andreascarpino.ansible.inventory.util;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import it.andreascarpino.ansible.inventory.type.Group;
-import it.andreascarpino.ansible.inventory.type.Host;
-import it.andreascarpino.ansible.inventory.type.Inventory;
-import it.andreascarpino.ansible.inventory.type.Variable;
+import it.andreascarpino.ansible.inventory.type.AnsibleGroup;
+import it.andreascarpino.ansible.inventory.type.AnsibleHost;
+import it.andreascarpino.ansible.inventory.type.AnsibleInventory;
+import it.andreascarpino.ansible.inventory.type.AnsibleVariable;
 
 /**
  * @author Andrea Scarpino
  */
-public class InventoryWriter {
+public class AnsibleInventoryWriter {
 
-	private InventoryWriter() {
+	private AnsibleInventoryWriter() {
 	}
 
 	private static String groupHeader(String group) {
 		return "[" + group + "]\n";
 	}
 
-	private static String variableBlock(Variable variable) {
+	private static String variableBlock(AnsibleVariable variable) {
 		final String val = variable.getValue().toString();
 
 		// Escape backslashes for YAML
@@ -52,11 +52,11 @@ public class InventoryWriter {
 		return "[" + group + ":children]\n";
 	}
 
-	private static String printHost(Host host) {
+	private static String printHost(AnsibleHost host) {
 		final StringBuilder builder = new StringBuilder();
 		builder.append(host.getName());
 
-		for (Variable variable : host.getVariables()) {
+		for (AnsibleVariable variable : host.getVariables()) {
 			builder.append(" " + variableBlock(variable));
 		}
 
@@ -65,29 +65,29 @@ public class InventoryWriter {
 		return builder.toString();
 	}
 
-	private static void printHost(Host host, OutputStream stream) throws IOException {
+	private static void printHost(AnsibleHost host, OutputStream stream) throws IOException {
 		stream.write(host.getName().getBytes());
 
-		for (Variable variable : host.getVariables()) {
+		for (AnsibleVariable variable : host.getVariables()) {
 			stream.write((" " + variableBlock(variable)).getBytes());
 		}
 
 		stream.write("\n".getBytes());
 	}
 
-	public static String write(Inventory inventory) {
+	public static String write(AnsibleInventory inventory) {
 		final StringBuilder builder = new StringBuilder();
 
-		for (Host host : inventory.getHosts()) {
+		for (AnsibleHost host : inventory.getHosts()) {
 			builder.append(printHost(host));
 		}
 
-		for (Group group : inventory.getGroups()) {
+		for (AnsibleGroup group : inventory.getGroups()) {
 			if (!group.getSubgroups().isEmpty()) {
 				builder.append(groupOfGroupHeader(group.getName()));
 
 				if (!group.getSubgroups().isEmpty()) {
-					for (Group g : group.getSubgroups()) {
+					for (AnsibleGroup g : group.getSubgroups()) {
 						builder.append(g.getName() + "\n");
 					}
 				} else {
@@ -98,7 +98,7 @@ public class InventoryWriter {
 			if (!group.getHosts().isEmpty()) {
 				builder.append(groupHeader(group.getName()));
 
-				for (Host host : group.getHosts()) {
+				for (AnsibleHost host : group.getHosts()) {
 					builder.append(printHost(host));
 				}
 			}
@@ -107,7 +107,7 @@ public class InventoryWriter {
 				builder.append(groupVarsHeader(group.getName()));
 
 				if (!group.getVariables().isEmpty()) {
-					for (Variable variable : group.getVariables()) {
+					for (AnsibleVariable variable : group.getVariables()) {
 						builder.append(variableBlock(variable) + "\n");
 					}
 				} else {
@@ -119,17 +119,17 @@ public class InventoryWriter {
 		return builder.toString();
 	}
 
-	public static void write(Inventory inventory, OutputStream stream) throws IOException {
-		for (Host host : inventory.getHosts()) {
+	public static void write(AnsibleInventory inventory, OutputStream stream) throws IOException {
+		for (AnsibleHost host : inventory.getHosts()) {
 			printHost(host, stream);
 		}
 
-		for (Group group : inventory.getGroups()) {
+		for (AnsibleGroup group : inventory.getGroups()) {
 			if (!group.getSubgroups().isEmpty()) {
 				stream.write(groupOfGroupHeader(group.getName()).getBytes());
 
 				if (!group.getSubgroups().isEmpty()) {
-					for (Group g : group.getSubgroups()) {
+					for (AnsibleGroup g : group.getSubgroups()) {
 						stream.write((g.getName() + "\n").getBytes());
 					}
 				} else {
@@ -140,7 +140,7 @@ public class InventoryWriter {
 			if (!group.getHosts().isEmpty()) {
 				stream.write(groupHeader(group.getName()).getBytes());
 
-				for (Host host : group.getHosts()) {
+				for (AnsibleHost host : group.getHosts()) {
 					printHost(host, stream);
 				}
 			}
@@ -150,7 +150,7 @@ public class InventoryWriter {
 				stream.write(groupVarsHeader(group.getName()).getBytes());
 
 				if (!group.getVariables().isEmpty()) {
-					for (Variable variable : group.getVariables()) {
+					for (AnsibleVariable variable : group.getVariables()) {
 						stream.write((variableBlock(variable) + "\n").getBytes());
 					}
 				} else {

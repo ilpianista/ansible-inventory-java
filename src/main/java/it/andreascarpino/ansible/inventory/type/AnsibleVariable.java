@@ -26,20 +26,20 @@ import org.apache.commons.lang3.ClassUtils;
 
 /**
  * @author Andrea Scarpino
- * @see Constants
+ * @see AnsibleConstants
  */
-public class Variable {
+public class AnsibleVariable {
 
 	private String name;
 
 	private Object value;
 
-	public Variable(String name) {
+	public AnsibleVariable(String name) {
 		super();
 		this.name = name;
 	}
 
-	public Variable(String name, Object value) {
+	public AnsibleVariable(String name, Object value) {
 		this(name);
 		this.value = value;
 	}
@@ -72,7 +72,7 @@ public class Variable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Variable other = (Variable) obj;
+		AnsibleVariable other = (AnsibleVariable) obj;
 		if (name == null) {
 			if (other.name != null)
 				return false;

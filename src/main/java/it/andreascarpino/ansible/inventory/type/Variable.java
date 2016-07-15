@@ -17,6 +17,13 @@
  */
 package it.andreascarpino.ansible.inventory.type;
 
+import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.lang3.ClassUtils;
+
 /**
  * @author Andrea Scarpino
  * @see Constants
@@ -73,5 +80,107 @@ public class Variable {
 			return false;
 		return true;
 	}
+
+	@Override
+    public String toString() {
+        if (this.value == null) {
+            return "";
+        }
+
+        return this.name + "=" + valueToString(this.value);
+    }
+
+    public String valueToString(Object value) {
+        if (value == null) {
+            return "";
+        }
+
+        final Class<?> vClass = value.getClass();
+
+        String str;
+        if (Collection.class.isAssignableFrom(vClass)) {
+            str = listToString((Collection<?>) value);
+        } else if (Map.class.isAssignableFrom(vClass)) {
+            str = mapToString((Map<?, ?>) value);
+        } else if (ClassUtils.isPrimitiveOrWrapper(vClass) || value instanceof String) {
+            str = value.toString();
+        } else {
+            str = objToString(value);
+        }
+
+        // Use double backslash because of YAML syntax
+        return str.replace("\\", "\\\\");
+    }
+
+    public String objToString(Object value) {
+        final StringBuilder buf = new StringBuilder();
+
+        for (Field f : value.getClass().getDeclaredFields()) {
+            f.setAccessible(true);
+
+            try {
+                buf.append("'" + f.getName() + "': ");
+                if (ClassUtils.isPrimitiveOrWrapper(value.getClass()) || value instanceof String) {
+                    buf.append("'" + value + "'");
+                } else {
+                    buf.append(valueToString(f.get(value)));
+                }
+                buf.append(", ");
+            } catch (IllegalArgumentException | IllegalAccessException e) {
+                // Silently ignore errors
+                e.printStackTrace();
+            }
+        }
+        buf.replace(buf.length() - 2, buf.length(), "");
+
+        return buf.toString();
+    }
+
+    public String listToString(Collection<?> list) {
+        final StringBuilder buf = new StringBuilder();
+        buf.append("'[");
+
+        if (!list.isEmpty()) {
+            for (Object o : list) {
+                if (ClassUtils.isPrimitiveOrWrapper(o.getClass()) || o instanceof String) {
+                    buf.append("'" + o + "'");
+                } else {
+                    buf.append(valueToString(o));
+                }
+                buf.append(", ");
+            }
+            buf.replace(buf.length() - 2, buf.length(), "");
+        }
+
+        buf.append("]'");
+
+        return buf.toString();
+    }
+
+    public String mapToString(Map<?, ?> map) {
+        final StringBuilder buf = new StringBuilder();
+        buf.append("{");
+
+        if (!map.isEmpty()) {
+            for (Entry<?, ?> o : map.entrySet()) {
+                final Object v = o.getValue();
+
+                if (v != null) {
+                    buf.append("'" + o.getKey() + "': ");
+                    if (ClassUtils.isPrimitiveOrWrapper(v.getClass()) || v instanceof String) {
+                        buf.append("'" + v + "'");
+                    } else {
+                        buf.append(valueToString(v));
+                    }
+                    buf.append(", ");
+                }
+            }
+            buf.replace(buf.length() - 2, buf.length(), "");
+        }
+
+        buf.append("}");
+
+        return buf.toString();
+    }
 
 }

@@ -242,6 +242,39 @@ public class AnsibleConstants {
 	 */
 	public static final String ANSIBLE_WINRM_SERVER_CERT_VALIDATION = "ansible_winrm_server_cert_validation";
 
+	/**
+	 * Set to true to enable delegation of commands on the remote host when
+	 * using kerberos.
+	 */
+	public static final String ANSIBLE_WINRM_KERBEROS_DELEGATION = "ansible_winrm_kerberos_delegation";
+
+	/**
+	 * Maximum seconds to wait before an HTTP connect/read times out (default
+	 * 30). This value should be slightly higher than
+	 * <code>operation_timeout_sec</code>, as the server can block *at least*
+	 * that long.
+	 */
+	public static final String ANSIBLE_WINRM_READ_TIMEOUT_SEC = "ansible_winrm_read_timeout_sec";
+
+	/**
+	 * Maximum allowed time in seconds for any single wsman HTTP operation
+	 * (default 20). Note that operation timeouts while receiving output (the
+	 * only wsman operation that should take any significant time, and where
+	 * these timeouts are expected) will be silently retried indefinitely.
+	 */
+	public static final String ANSIBLE_WINRM_OPERATION_TIMEOUT_SEC = "ansible_winrm_operation_timeout_sec";
+
+	/**
+	 * The hostname to use for the kerberos exchange (defaults to the hostname
+	 * in the endpoint URL).
+	 */
+	public static final String ANSIBLE_WINRM_KERBEROS_HOSTNAME_OVERRIDE = "ansible_winrm_kerberos_hostname_override";
+
+	/**
+	 * Default group that contains all hosts in the inventory.
+	 */
+	public static final String ALL_GROUP = "all";
+
 	private AnsibleConstants() {
 	}
 
@@ -277,6 +310,21 @@ public class AnsibleConstants {
 		private AnsibleWinRMScheme() {
 		}
 
+	}
+
+	/**
+	 * @author Andrea Scarpino
+	 */
+	public class AnsibleWinRMTransport {
+
+		public static final String NTLM = "ntlm";
+
+		public static final String KERBEROS = "kerberos";
+
+		public static final String PLAINTEXT = "plaintext";
+
+		private AnsibleWinRMTransport() {
+		}
 	}
 
 	/**

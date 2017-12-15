@@ -104,12 +104,22 @@ public class AnsibleVariable {
             str = mapToString((Map<?, ?>) value);
         } else if (ClassUtils.isPrimitiveOrWrapper(vClass) || value instanceof String || vClass.isEnum()) {
             str = value.toString();
+
+            // Use double backslash because of YAML syntax
+            str = str.replace("\\", "\\\\");
+
+            // Escape quotes
+            str = str.replace("\"", "\\\"");
+
+            // Quote variables with spaces
+            if (str.contains(" ")) {
+              str = "\"" + str + "\"";
+            }
         } else {
             str = objToString(value);
         }
 
-        // Use double backslash because of YAML syntax
-        return str.replace("\\", "\\\\");
+        return str;
     }
 
     public String objToString(Object value) {

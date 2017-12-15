@@ -129,9 +129,9 @@ public class AnsibleVariable {
             f.setAccessible(true);
 
             try {
-                buf.append("'" + f.getName() + "': ");
+                buf.append("\"" + f.getName() + "\": ");
                 if (ClassUtils.isPrimitiveOrWrapper(value.getClass()) || value instanceof String) {
-                    buf.append("'" + value + "'");
+                    buf.append("\"" + value + "\"");
                 } else {
                     buf.append(valueToString(f.get(value)));
                 }
@@ -153,7 +153,7 @@ public class AnsibleVariable {
         if (!list.isEmpty()) {
             for (Object o : list) {
                 if (ClassUtils.isPrimitiveOrWrapper(o.getClass()) || o instanceof String) {
-                    buf.append("'" + o + "'");
+                    buf.append("\"" + o + "\"");
                 } else {
                     buf.append(valueToString(o));
                 }

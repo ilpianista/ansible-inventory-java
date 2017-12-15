@@ -102,7 +102,7 @@ public class AnsibleVariable {
             str = listToString((Collection<?>) value);
         } else if (Map.class.isAssignableFrom(vClass)) {
             str = mapToString((Map<?, ?>) value);
-        } else if (ClassUtils.isPrimitiveOrWrapper(vClass) || value instanceof String) {
+        } else if (ClassUtils.isPrimitiveOrWrapper(vClass) || value instanceof String || vClass.isEnum()) {
             str = value.toString();
         } else {
             str = objToString(value);

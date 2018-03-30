@@ -1,6 +1,8 @@
 ansible-static-inventory
 ========================
 
+[![Build Status](https://gitlab.com/ilpianista/ansible-static-inventory/badges/master/build.svg)](https://gitlab.com/ilpianista/ansible-static-inventory/pipelines)
+
 A Java library to read and write [Ansible](https://www.ansible.com/) [static inventories](https://docs.ansible.com/ansible/intro_inventory.html).
 
 # Build

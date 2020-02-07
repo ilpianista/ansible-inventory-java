@@ -2,6 +2,7 @@ ansible-static-inventory
 ========================
 
 [![Build Status](https://gitlab.com/ilpianista/ansible-static-inventory/badges/master/build.svg)](https://gitlab.com/ilpianista/ansible-static-inventory/pipelines)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Filpianista%2Fansible-inventory-java.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Filpianista%2Fansible-inventory-java?ref=badge_shield)
 
 A Java library to read and write [Ansible](https://www.ansible.com/) [static inventories](https://docs.ansible.com/ansible/intro_inventory.html).
 
@@ -18,3 +19,6 @@ Donations via [Liberapay](https://liberapay.com/ilpianista) or Bitcoin (1Ph3hFEo
 # License
 
 MIT
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Filpianista%2Fansible-inventory-java.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Filpianista%2Fansible-inventory-java?ref=badge_large)

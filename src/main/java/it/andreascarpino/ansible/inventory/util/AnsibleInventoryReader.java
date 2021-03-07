@@ -17,12 +17,17 @@
  */
 package it.andreascarpino.ansible.inventory.util;
 
-import java.util.StringTokenizer;
-
 import it.andreascarpino.ansible.inventory.type.AnsibleGroup;
 import it.andreascarpino.ansible.inventory.type.AnsibleHost;
 import it.andreascarpino.ansible.inventory.type.AnsibleInventory;
 import it.andreascarpino.ansible.inventory.type.AnsibleVariable;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.StringTokenizer;
+import java.util.stream.Stream;
 
 /**
  * @author Andrea Scarpino
@@ -129,4 +134,11 @@ public class AnsibleInventoryReader {
 		return inventory;
 	}
 
+	public static AnsibleInventory read(final Path inventoryPath) throws IOException {
+		StringBuilder contentBuilder = new StringBuilder();
+		Stream<String> stream = Files.lines(inventoryPath, StandardCharsets.UTF_8);
+		stream.forEach(s -> contentBuilder.append(s).append("\n"));
+
+		return read(contentBuilder.toString());
+	}
 }
